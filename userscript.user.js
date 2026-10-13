@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Feather: Pod filter menu
 // @namespace    local.feather.pod-menu
-// @version      2.2.4
+// @version      2.2.5
 // @description  Adds a pod menu to the CheckSet task list: filter the Runtime Findings V2 and Individual Apps tasks by POD.
 // @match        https://feather.openai.com/*
 // @noframes
@@ -18,7 +18,7 @@
   if (window.__podMenuLoaded) return;
   window.__podMenuLoaded = true;
 
-  const VERSION = '2.2.4';
+  const VERSION = '2.2.5';
   const TAG = '[podmenu v' + VERSION + ']';
 
   /* ======================= Pod data ======================= */
@@ -32,25 +32,413 @@
   // Sources: /testing-batch/new-runtime-findings-v2/introduction ("Runtime Apps by POD") and
   //          /individual-apps/introduction ("Applications by POD").
   const BUILTIN_POD_DATA = {
-    "updated": "2026-10-10",
-    "groups": [
-      { "name": "Runtime Findings V2", "pods": [
-        { "id": "v2-commercial", "name": "Commercial", "apps": ["buffer", "crayon", "expedia", "flg", "funnel", "google-business-profile", "intercom", "loop-returns", "mailchimp", "meta-business-suite-website", "opentable", "rl-yotpo", "salesforce-v2-website", "salesloft", "shopify-admin", "zohocrm-website", "adobe-sign", "box", "confluence-website", "deel", "docusign", "dropbox-business", "fireflies-website", "gdrive", "google-workspace", "lexisnexis", "loom-website", "monday", "ms-visio-21", "mural-website", "notion-website", "obsidian", "sharepoint", "slack", "westlaw-website"] },
-        { "id": "v2-creative", "name": "Creative & Design", "apps": ["adobe-audition", "adobe-express", "adobe-illustrator", "adobe-lightroom-desktop", "adobe-photoshop-webapp", "after-effects", "behance-website", "calibre", "camtasia", "clo3d-website", "coreldraw-website", "frame", "framer-website", "houzz-website", "letterboxd", "nuke-desktop", "premiere-pro", "rl-sketchup", "scrivener", "shotgrid", "spotify", "webflow-website", "wordpress-website", "adobe-sign", "box", "confluence-website", "deel", "docusign", "dropbox-business", "fireflies-website", "gdrive", "google-workspace", "lexisnexis", "loom-website", "monday", "ms-visio-21", "mural-website", "notion-website", "obsidian", "sharepoint", "slack", "westlaw-website"] },
-        { "id": "v2-engineering", "name": "Engineering & Data", "apps": ["1password-business", "amplitude", "azure-devops-pipelines", "azure-monitor", "azure-portal", "bastion", "bigquery", "cursor", "cursor-website", "cypress-website", "datadog-apm", "datadog-logs", "datadog-metrics-monitors", "datadog-website", "gitlab", "grafana", "kaggle-website", "linear", "metabase-website", "mixpanel", "mlflow", "mlflow3", "ms-azure-devops", "okta", "onetrust-website", "rl-postman-website", "sentry", "servicenow", "splunk", "tableau", "together", "twilio-website", "vertex-ai", "vs-code-website"] },
-        { "id": "v2-finance", "name": "Finance & Markets", "apps": ["anaplan", "bank-of-harbor", "bloomberg", "bloomberg-terminal", "edgar-sec", "expertnetwork", "factsite-website", "farsight", "kyriba", "lseg", "moodys", "odoo", "odoo-website", "pitchbook-web", "plaid", "quickbooks-angular", "ramp", "razorpay", "redtail-website", "sap", "square", "statista-website", "taxjar-website", "tipalti", "zip-procurement", "zoho-invoice-website"] },
-        { "id": "v2-healthcare", "name": "Healthcare", "apps": ["covermymeds", "epic-website", "health-equity", "lifeline", "mychart-epic-website", "pacs-dicom", "photon-health", "powerbi-multi-rl-clinical-ops-administration", "zocdoc-website", "adobe-sign", "box", "confluence-website", "deel", "docusign", "dropbox-business", "fireflies-website", "gdrive", "google-workspace", "lexisnexis", "loom-website", "monday", "ms-visio-21", "mural-website", "notion-website", "obsidian", "sharepoint", "slack", "westlaw-website"] },
-        { "id": "v2-productivity", "name": "Productivity", "apps": ["adobe-sign", "box", "confluence-website", "deel", "docusign", "dropbox-business", "fireflies-website", "gdrive", "google-workspace", "lexisnexis", "loom-website", "monday", "ms-visio-21", "mural-website", "notion-website", "obsidian", "sharepoint", "slack", "westlaw-website", "buffer", "crayon", "expedia", "flg", "funnel", "google-business-profile", "intercom", "loop-returns", "mailchimp", "meta-business-suite-website", "opentable", "rl-yotpo", "salesforce-v2-website", "salesloft", "shopify-admin", "zohocrm-website"] }
-      ] },
-      { "name": "Individual apps", "pods": [
-        { "id": "ia-commercial", "name": "Commercial", "apps": ["Ahrefs Site Explorer", "Amazon Ads Campaign Manager", "AWeber", "Constant Contact", "ConvertKit", "eBay Seller Hub", "Getfly CRM", "GetResponse", "Google Analytics", "Google Trends", "HoneyBook", "Instantly", "Kommo CRM", "LinkedIn Campaign Manager", "Pipedrive", "Salesforce"] },
-        { "id": "ia-creative", "name": "Creative", "apps": ["Miro", "Scrivener", "SoundCloud"] },
-        { "id": "ia-engineering", "name": "Engineering", "apps": ["SQL Server Management Studio"] },
-        { "id": "ia-finance", "name": "Finance", "apps": ["Acumatica ERP", "FreshBooks", "Oracle JD Edwards EnterpriseOne", "Payoneer", "PayPal", "SAP Business One", "YNAB"] },
-        { "id": "ia-healthcare", "name": "Healthcare", "apps": ["DocuWare", "ERPNext", "Foxit PDF Editor", "Jotform", "LimeSurvey"] },
-        { "id": "ia-productivity", "name": "Productivity", "apps": ["Domo", "Ironclad", "LibreOffice Calc", "Medium", "Microsoft Loop", "Microsoft Planner", "Microsoft Whiteboard", "Notepad", "Odoo", "Typeform", "Viber"] }
-      ] }
-    ]
+      "updated": "2026-10-13",
+      "groups": [
+          {
+              "name": "Runtime Findings V2",
+              "pods": [
+                  {
+                      "id": "v2-commercial",
+                      "name": "Commercial",
+                      "apps": [
+                          "AfterShip",
+                          "Amazon Sellers",
+                          "Close CRM",
+                          "DoorDash",
+                          "flg",
+                          "Funnel",
+                          "Gainsight",
+                          "GetYourGuide",
+                          "Google Business Profile",
+                          "Google Flights",
+                          "Hootsuite",
+                          "Instacart",
+                          "MMT Connect",
+                          "Muck Rack",
+                          "Oracle OPERA Cloud",
+                          "Reddit",
+                          "Resy",
+                          "Salesloft",
+                          "Square Website v2",
+                          "Thumbtack",
+                          "Uber",
+                          "Vendoo",
+                          "Yelp",
+                          "Yotpo",
+                          "Zendesk QA",
+                          "Zoho CRM",
+                          "Google Workspace",
+                          "Adobe Acrobat",
+                          "Airtable",
+                          "ClickUp",
+                          "Clio",
+                          "Confluence (opens Kernel/Jira)",
+                          "DocuSign",
+                          "eFax",
+                          "Fireflies",
+                          "Google Calendar",
+                          "Guru",
+                          "Loom",
+                          "Microsoft PowerPoint",
+                          "Microsoft SharePoint (opens Latch Mail)",
+                          "Microsoft Teams (opens Latch Mail)",
+                          "Monday",
+                          "MS Office",
+                          "MS Project",
+                          "MS SharePoint",
+                          "Notion",
+                          "Notion Website",
+                          "Notion · New task",
+                          "Obsidian",
+                          "Slack",
+                          "Telegram",
+                          "Westlaw",
+                          "Adobe Illustrator",
+                          "adobe-audition",
+                          "After Effects",
+                          "calibre",
+                          "camtasia",
+                          "clo3d-website",
+                          "coreldraw-website",
+                          "frame",
+                          "Houzz",
+                          "letterboxd",
+                          "nuke-desktop",
+                          "rl-sketchup",
+                          "scrivener",
+                          "shotgrid",
+                          "Style3D",
+                          "Unity",
+                          "webflow-website"
+                      ]
+                  },
+                  {
+                      "id": "v2-creative",
+                      "name": "Creative & Design",
+                      "apps": [
+                          "Adobe Illustrator",
+                          "adobe-audition",
+                          "After Effects",
+                          "calibre",
+                          "camtasia",
+                          "clo3d-website",
+                          "coreldraw-website",
+                          "frame",
+                          "Houzz",
+                          "letterboxd",
+                          "nuke-desktop",
+                          "rl-sketchup",
+                          "scrivener",
+                          "shotgrid",
+                          "Style3D",
+                          "Unity",
+                          "webflow-website",
+                          "Google Workspace",
+                          "Adobe Acrobat",
+                          "Airtable",
+                          "ClickUp",
+                          "Clio",
+                          "Confluence (opens Kernel/Jira)",
+                          "DocuSign",
+                          "eFax",
+                          "Fireflies",
+                          "Google Calendar",
+                          "Guru",
+                          "Loom",
+                          "Microsoft PowerPoint",
+                          "Microsoft SharePoint (opens Latch Mail)",
+                          "Microsoft Teams (opens Latch Mail)",
+                          "Monday",
+                          "MS Office",
+                          "MS Project",
+                          "MS SharePoint",
+                          "Notion",
+                          "Notion Website",
+                          "Notion · New task",
+                          "Obsidian",
+                          "Slack",
+                          "Telegram",
+                          "Westlaw"
+                      ]
+                  },
+                  {
+                      "id": "v2-engineering",
+                      "name": "Engineering & Data",
+                      "apps": [
+                          "amplitude",
+                          "arXiv",
+                          "azure-devops-pipelines",
+                          "azure-monitor",
+                          "azure-portal",
+                          "bastion",
+                          "bigquery",
+                          "cursor",
+                          "cursor-website",
+                          "cypress-website",
+                          "Datadog",
+                          "datadog-apm",
+                          "datadog-logs",
+                          "datadog-metrics-monitors",
+                          "datadog-website",
+                          "grafana",
+                          "kaggle-website",
+                          "metabase-website",
+                          "mixpanel",
+                          "mlflow",
+                          "mlflow3",
+                          "ms-azure-devops",
+                          "NX Witness",
+                          "okta",
+                          "onetrust-website",
+                          "rl-postman-website",
+                          "sentry",
+                          "servicenow",
+                          "Snowflake",
+                          "splunk",
+                          "Tableau",
+                          "together",
+                          "vertex-ai",
+                          "vs-code-website",
+                          "Google Workspace"
+                      ]
+                  },
+                  {
+                      "id": "v2-finance",
+                      "name": "Finance & Markets",
+                      "apps": [
+                          "anaplan",
+                          "bank-of-harbor",
+                          "bloomberg",
+                          "bloomberg-terminal",
+                          "Chase",
+                          "edgar-sec",
+                          "expertnetwork",
+                          "farsight",
+                          "Finance LH",
+                          "FraudLabs",
+                          "kyriba",
+                          "lseg",
+                          "moodys",
+                          "odoo-website",
+                          "Oracle EPM",
+                          "pitchbook-web",
+                          "plaid",
+                          "ProjectionLab",
+                          "Razorpay",
+                          "redtail-website",
+                          "statista-website",
+                          "taxjar-website",
+                          "zip-procurement",
+                          "Google Workspace"
+                      ]
+                  },
+                  {
+                      "id": "v2-healthcare",
+                      "name": "Healthcare",
+                      "apps": [
+                          "covermymeds",
+                          "health-equity",
+                          "lifeline",
+                          "Meditech Inpatient",
+                          "Mindbody",
+                          "mychart-epic-website",
+                          "MyFitnessPal",
+                          "pacs-dicom",
+                          "photon-health",
+                          "powerbi-multi-rl-clinical-ops-administration",
+                          "Stedi",
+                          "Strava",
+                          "zocdoc-website",
+                          "Google Workspace",
+                          "Adobe Acrobat",
+                          "Airtable",
+                          "ClickUp",
+                          "Clio",
+                          "Confluence (opens Kernel/Jira)",
+                          "DocuSign",
+                          "eFax",
+                          "Fireflies",
+                          "Google Calendar",
+                          "Guru",
+                          "Loom",
+                          "Microsoft PowerPoint",
+                          "Microsoft SharePoint (opens Latch Mail)",
+                          "Microsoft Teams (opens Latch Mail)",
+                          "Monday",
+                          "MS Office",
+                          "MS Project",
+                          "MS SharePoint",
+                          "Notion",
+                          "Notion Website",
+                          "Notion · New task",
+                          "Obsidian",
+                          "Slack",
+                          "Telegram",
+                          "Westlaw"
+                      ]
+                  },
+                  {
+                      "id": "v2-productivity",
+                      "name": "Productivity",
+                      "apps": [
+                          "Adobe Acrobat",
+                          "Airtable",
+                          "ClickUp",
+                          "Clio",
+                          "Confluence (opens Kernel/Jira)",
+                          "DocuSign",
+                          "eFax",
+                          "Fireflies",
+                          "Google Calendar",
+                          "Guru",
+                          "Loom",
+                          "Microsoft PowerPoint",
+                          "Microsoft SharePoint (opens Latch Mail)",
+                          "Microsoft Teams (opens Latch Mail)",
+                          "Monday",
+                          "MS Office",
+                          "MS Project",
+                          "MS SharePoint",
+                          "Notion",
+                          "Notion Website",
+                          "Notion · New task",
+                          "Obsidian",
+                          "Slack",
+                          "Telegram",
+                          "Westlaw",
+                          "Google Workspace",
+                          "AfterShip",
+                          "Amazon Sellers",
+                          "Close CRM",
+                          "DoorDash",
+                          "flg",
+                          "Funnel",
+                          "Gainsight",
+                          "GetYourGuide",
+                          "Google Business Profile",
+                          "Google Flights",
+                          "Hootsuite",
+                          "Instacart",
+                          "MMT Connect",
+                          "Muck Rack",
+                          "Oracle OPERA Cloud",
+                          "Reddit",
+                          "Resy",
+                          "Salesloft",
+                          "Square Website v2",
+                          "Thumbtack",
+                          "Uber",
+                          "Vendoo",
+                          "Yelp",
+                          "Yotpo",
+                          "Zendesk QA",
+                          "Zoho CRM",
+                          "Adobe Illustrator",
+                          "adobe-audition",
+                          "After Effects",
+                          "calibre",
+                          "camtasia",
+                          "clo3d-website",
+                          "coreldraw-website",
+                          "frame",
+                          "Houzz",
+                          "letterboxd",
+                          "nuke-desktop",
+                          "rl-sketchup",
+                          "scrivener",
+                          "shotgrid",
+                          "Style3D",
+                          "Unity",
+                          "webflow-website"
+                      ]
+                  }
+              ]
+          },
+          {
+              "name": "Individual apps",
+              "pods": [
+                  {
+                      "id": "ia-commercial",
+                      "name": "Commercial",
+                      "apps": [
+                          "Ahrefs Site Explorer",
+                          "Amazon Ads Campaign Manager",
+                          "AWeber",
+                          "Constant Contact",
+                          "ConvertKit",
+                          "eBay Seller Hub",
+                          "Getfly CRM",
+                          "GetResponse",
+                          "Google Analytics",
+                          "Google Trends",
+                          "HoneyBook",
+                          "Instantly",
+                          "Kommo CRM",
+                          "LinkedIn Campaign Manager",
+                          "Pipedrive",
+                          "Salesforce"
+                      ]
+                  },
+                  {
+                      "id": "ia-creative",
+                      "name": "Creative",
+                      "apps": [
+                          "Miro",
+                          "Scrivener",
+                          "SoundCloud"
+                      ]
+                  },
+                  {
+                      "id": "ia-engineering",
+                      "name": "Engineering",
+                      "apps": [
+                          "SQL Server Management Studio"
+                      ]
+                  },
+                  {
+                      "id": "ia-finance",
+                      "name": "Finance",
+                      "apps": [
+                          "Acumatica ERP",
+                          "FreshBooks",
+                          "Oracle JD Edwards EnterpriseOne",
+                          "Payoneer",
+                          "PayPal",
+                          "SAP Business One",
+                          "YNAB"
+                      ]
+                  },
+                  {
+                      "id": "ia-healthcare",
+                      "name": "Healthcare",
+                      "apps": [
+                          "DocuWare",
+                          "ERPNext",
+                          "Foxit PDF Editor",
+                          "Jotform",
+                          "LimeSurvey"
+                      ]
+                  },
+                  {
+                      "id": "ia-productivity",
+                      "name": "Productivity",
+                      "apps": [
+                          "Domo",
+                          "Ironclad",
+                          "LibreOffice Calc",
+                          "Medium",
+                          "Microsoft Loop",
+                          "Microsoft Planner",
+                          "Microsoft Whiteboard",
+                          "Notepad",
+                          "Odoo",
+                          "Typeform",
+                          "Viber"
+                      ]
+                  }
+              ]
+          }
+      ]
   };
   /* POD_DATA_END */
 
