@@ -5,7 +5,8 @@
 // @description  Adds a pod menu to the CheckSet task list: filter the Runtime Findings V2 and Individual Apps tasks by POD.
 // @match        https://feather.openai.com/*
 // @noframes
-// @grant        none
+// @grant        GM_xmlhttpRequest
+// @connect      pod-list-updater.vercel.app
 // @run-at       document-end
 // ==/UserScript==
 
@@ -184,7 +185,46 @@
       }
     }
   } catch (e) { store.del(LS_PODS); }
+  // Auto-update: pods.json in the GitHub repo is refreshed by the scheduled task; the script re-reads it every 6 hours.
+  // A list imported by hand always wins over the auto-updated one.
+  const AUTO_URL = 'https://pod-list-updater.vercel.app/pods.json';
+  const AUTO_EVERY_MS = 6 * 60 * 60 * 1000;
+  const LS_AUTO = 'podmenu.auto.v1', LS_AUTO_AT = 'podmenu.autoAt.v1';
+  let autoData = null;
+  try {
+    const rawAuto = store.get(LS_AUTO);
+    if (rawAuto) {
+      const d = parsePodData(rawAuto, '');
+      if (String(d.updated) >= String(BUILTIN_POD_DATA.updated)) autoData = d;
+    }
+  } catch (e) { store.del(LS_AUTO); }
+  if (!imported && autoData) podData = autoData;
+  const usingAuto = () => !imported && !!autoData && podData === autoData;
+  const dataLabel = () => imported ? ' (imported)' : (usingAuto() ? ' (auto)' : ' (built in)');
   let pods = buildPods(podData);
+
+  function applyAuto(text) {
+    const d = parsePodData(text, '');
+    store.set(LS_AUTO, JSON.stringify(d)); store.set(LS_AUTO_AT, String(Date.now()));
+    autoData = d;
+    if (!imported) { podData = d; rebuildPods(); }
+    log('auto-updated pod data', d.updated);
+  }
+  function autoRefresh() {
+    if ((parseInt(store.get(LS_AUTO_AT), 10) || 0) + AUTO_EVERY_MS > Date.now()) return;
+    const url = AUTO_URL + '?t=' + Math.floor(Date.now() / 600000); // dodge long caches, at most once per 10 min
+    const fail = m => log('auto-update failed:', m);
+    if (typeof GM_xmlhttpRequest === 'function') {
+      GM_xmlhttpRequest({
+        method: 'GET', url: url, timeout: 20000,
+        onload: r => { try { if (r.status < 200 || r.status >= 300) throw new Error('HTTP ' + r.status); applyAuto(r.responseText); } catch (e) { fail(e.message); } },
+        onerror: () => fail('network error'), ontimeout: () => fail('timed out')
+      });
+    } else if (typeof fetch === 'function') {
+      fetch(url, { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+        .then(applyAuto).catch(e => fail(e.message));
+    }
+  }
 
   const settings = Object.assign({}, DEFAULT_SETTINGS);
   try {
@@ -656,7 +696,7 @@
     const pc = podCounts(snap);
     return JSON.stringify({
       version: VERSION, url: location.href, searchBox: !!searchBox(), latestTag: hasLatestTag(),
-      settings: settings, podDataUpdated: podData.updated, podDataImported: imported,
+      settings: settings, podDataUpdated: podData.updated, podDataImported: imported, podDataAuto: usingAuto(),
       podIds: pods.map(p => p.id),
       sampleTitles: snap.slice(0, 5).map(x => x.title.trim()),
       activePod: activePodId, rows: snap.length,
@@ -776,7 +816,7 @@
         (c.matched === 0 && more ? ' None of this pod is on the loaded pages; use "Load one more page" in the menu.' : '');
     } else {
       state = 'off'; label = 'Pods';
-      title = 'Filter tasks by pod (Alt+P). Pod data from ' + podData.updated + (imported ? ' (imported)' : '') + '. Shift-click copies a debug report.';
+      title = 'Filter tasks by pod (Alt+P). Pod data from ' + podData.updated + dataLabel() + '. Shift-click copies a debug report.';
     }
     if (lastWarn && state !== 'busy') title += ' Note: ' + lastWarn;
     if (Date.now() < flashUntil) label = flashText;
@@ -909,7 +949,7 @@
     menu.appendChild(linkButton('__import', 'Import pod list...', openImport));
     menu.appendChild(linkButton('__export', 'Copy pod list', () => { closeMenu(); copyText(JSON.stringify(podData, null, 2), 'Pod list copied'); }));
     if (imported) menu.appendChild(linkButton('__reset', 'Use built-in list', resetPodData));
-    menu.appendChild(el('div', 'pm-note', 'Pod data: ' + podData.updated + (imported ? ' (imported)' : ' (built in)')));
+    menu.appendChild(el('div', 'pm-note', 'Pod data: ' + podData.updated + dataLabel()));
     if (staleNote) menu.appendChild(el('div', 'pm-note', staleNote));
 
     if (focused) {
@@ -944,8 +984,8 @@
     render();
   }
   function resetPodData() {
-    store.del(LS_PODS); podData = BUILTIN_POD_DATA; imported = false; staleNote = '';
-    closeMenu(); focusBtn(); rebuildPods(); flash('Built-in list restored');
+    store.del(LS_PODS); podData = autoData || BUILTIN_POD_DATA; imported = false; staleNote = '';
+    closeMenu(); focusBtn(); rebuildPods(); flash(usingAuto() ? 'Auto-updated list restored' : 'Built-in list restored');
   }
   function saveImport() {
     const box = $(IMPORT_ID);
@@ -1114,8 +1154,10 @@
       schedule();
     }).observe(document.documentElement, { childList: true, subtree: true, characterData: true }); // row hiding is an attribute change, not observed
     setInterval(sync, T.heartbeat);
-    log('loaded; pod data', podData.updated, imported ? '(imported)' : '(built in)');
+    log('loaded; pod data', podData.updated, dataLabel());
     sync();
+    autoRefresh();
+    setInterval(autoRefresh, 30 * 60 * 1000);
   }
 
   if (document.body) start();
