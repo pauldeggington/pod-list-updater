@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Feather: Pod filter menu
 // @namespace    local.feather.pod-menu
-// @version      2.4.2
+// @version      2.4.3
 // @description  Adds a pod menu to the CheckSet task list: filter the Runtime Findings V2 and Individual Apps tasks by POD.
 // @match        https://feather.openai.com/*
 // @noframes
@@ -20,7 +20,7 @@
   if (window.__podMenuLoaded) return;
   window.__podMenuLoaded = true;
 
-  const VERSION = '2.4.2';
+  const VERSION = '2.4.3';
   const TAG = '[podmenu v' + VERSION + ']';
 
   /* ======================= Pod data ======================= */
@@ -29,7 +29,7 @@
   // "updated" date is the same as or newer than the built-in date.
   /* POD_DATA_START */
   const BUILTIN_POD_DATA = {
-    "updated": "2026-10-19",
+    "updated": "2026-10-20",
     "groups": [
       {
         "name": "Runtime Findings V2",
@@ -45,11 +45,9 @@
               "Crayon",
               "Customer.io",
               "DoorDash",
-              "flg",
               "FullEnrich",
               "Funnel",
               "GetYourGuide",
-              "Google Business Profile",
               "Gorgias",
               "Hootsuite",
               "Instacart",
@@ -59,14 +57,13 @@
               "Oracle OPERA Cloud",
               "Resy",
               "Salesforce V2",
-              "Salesloft",
               "Shopify",
               "Thumbtack",
               "Ticketmaster",
               "Uber",
               "Vendoo",
               "Viator",
-              "WhatsApp Business",
+              "Yelp",
               "Adobe Sign",
               "Ashby",
               "Box",
@@ -79,9 +76,6 @@
               "Dropbox",
               "eFax",
               "FaxUtil",
-              "Gmail",
-              "Google Calendar",
-              "Google Slides",
               "Gradescope",
               "Indeed",
               "Ironclad",
@@ -92,7 +86,6 @@
               "Microsoft Project",
               "Microsoft SharePoint (opens Latch Mail)",
               "Microsoft Teams",
-              "Monday.com",
               "Notion",
               "notion",
               "OneDrive",
@@ -101,12 +94,10 @@
               "Slack Vue",
               "Slack Web",
               "Slack",
-              "Adobe Photoshop Web",
               "AutoCAD Web",
               "Autodesk Maya",
               "camtasia",
               "clo3d-website",
-              "ESPN",
               "Figma",
               "frame",
               "Milanote",
@@ -115,20 +106,17 @@
               "scrivener",
               "shotgrid",
               "Style3D",
-              "Unity",
-              "Google Workspace"
+              "Unity"
             ]
           },
           {
             "id": "v2-creative",
             "name": "Creative & Design",
             "apps": [
-              "Adobe Photoshop Web",
               "AutoCAD Web",
               "Autodesk Maya",
               "camtasia",
               "clo3d-website",
-              "ESPN",
               "Figma",
               "frame",
               "Milanote",
@@ -150,9 +138,6 @@
               "Dropbox",
               "eFax",
               "FaxUtil",
-              "Gmail",
-              "Google Calendar",
-              "Google Slides",
               "Gradescope",
               "Indeed",
               "Ironclad",
@@ -163,7 +148,6 @@
               "Microsoft Project",
               "Microsoft SharePoint (opens Latch Mail)",
               "Microsoft Teams",
-              "Monday.com",
               "Notion",
               "notion",
               "OneDrive",
@@ -171,8 +155,7 @@
               "Signal",
               "Slack Vue",
               "Slack Web",
-              "Slack",
-              "Google Workspace"
+              "Slack"
             ]
           },
           {
@@ -184,18 +167,17 @@
               "AWS",
               "azure-monitor",
               "Bastion",
+              "BigQuery",
               "Coop",
               "cursor-website",
               "cypress-website",
-              "Databricks",
-              "Datadog",
               "Datadog Logs, Metrics & Monitors",
               "datadog-apm",
               "datadog-logs",
               "datadog-metrics-monitors",
               "datadog-website",
               "grafana",
-              "kaggle-website",
+              "Looker BI",
               "metabase-website",
               "Microsoft Power BI",
               "mixpanel",
@@ -212,8 +194,7 @@
               "splunk",
               "Tableau",
               "vertex-ai",
-              "vs-code-website",
-              "Google Workspace"
+              "vs-code-website"
             ]
           },
           {
@@ -230,10 +211,12 @@
               "FactSet",
               "farsight",
               "Finance LH",
+              "FLG",
               "FraudLabs",
               "IBISWorld",
               "Kyriba",
               "lseg",
+              "Moody's",
               "NetSuite",
               "Odoo",
               "odoo-website",
@@ -251,8 +234,7 @@
               "statista-website",
               "TallyPrime",
               "TradingView",
-              "zip-procurement",
-              "Google Workspace"
+              "zip-procurement"
             ]
           },
           {
@@ -284,9 +266,6 @@
               "Dropbox",
               "eFax",
               "FaxUtil",
-              "Gmail",
-              "Google Calendar",
-              "Google Slides",
               "Gradescope",
               "Indeed",
               "Ironclad",
@@ -297,7 +276,6 @@
               "Microsoft Project",
               "Microsoft SharePoint (opens Latch Mail)",
               "Microsoft Teams",
-              "Monday.com",
               "Notion",
               "notion",
               "OneDrive",
@@ -305,8 +283,7 @@
               "Signal",
               "Slack Vue",
               "Slack Web",
-              "Slack",
-              "Google Workspace"
+              "Slack"
             ]
           },
           {
@@ -325,9 +302,6 @@
               "Dropbox",
               "eFax",
               "FaxUtil",
-              "Gmail",
-              "Google Calendar",
-              "Google Slides",
               "Gradescope",
               "Indeed",
               "Ironclad",
@@ -338,7 +312,6 @@
               "Microsoft Project",
               "Microsoft SharePoint (opens Latch Mail)",
               "Microsoft Teams",
-              "Monday.com",
               "Notion",
               "notion",
               "OneDrive",
@@ -354,11 +327,9 @@
               "Crayon",
               "Customer.io",
               "DoorDash",
-              "flg",
               "FullEnrich",
               "Funnel",
               "GetYourGuide",
-              "Google Business Profile",
               "Gorgias",
               "Hootsuite",
               "Instacart",
@@ -368,20 +339,17 @@
               "Oracle OPERA Cloud",
               "Resy",
               "Salesforce V2",
-              "Salesloft",
               "Shopify",
               "Thumbtack",
               "Ticketmaster",
               "Uber",
               "Vendoo",
               "Viator",
-              "WhatsApp Business",
-              "Adobe Photoshop Web",
+              "Yelp",
               "AutoCAD Web",
               "Autodesk Maya",
               "camtasia",
               "clo3d-website",
-              "ESPN",
               "Figma",
               "frame",
               "Milanote",
@@ -390,8 +358,7 @@
               "scrivener",
               "shotgrid",
               "Style3D",
-              "Unity",
-              "Google Workspace"
+              "Unity"
             ]
           }
         ]
