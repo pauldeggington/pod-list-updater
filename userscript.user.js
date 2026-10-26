@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Feather: Pod filter menu
 // @namespace    local.feather.pod-menu
-// @version      2.4.5
+// @version      2.4.6
 // @description  Adds a pod menu to the CheckSet task list: filter the Runtime Findings V2 and Individual Apps tasks by POD.
 // @match        https://feather.openai.com/*
 // @noframes
@@ -20,7 +20,7 @@
   if (window.__podMenuLoaded) return;
   window.__podMenuLoaded = true;
 
-  const VERSION = '2.4.5';
+  const VERSION = '2.4.6';
   const TAG = '[podmenu v' + VERSION + ']';
 
   /* ======================= Pod data ======================= */
@@ -871,7 +871,7 @@
   }
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  const mouseInit = { bubbles: true, cancelable: true, view: window };
+  const mouseInit = { bubbles: true, cancelable: true }; // no `view`: the Tampermonkey sandbox window is not a real Window and makes MouseEvent throw
   const $ = id => document.getElementById(id);
   const root = () => $(ROOT_ID);
   const isOurs = n => {
