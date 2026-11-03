@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Feather: Pod filter menu
 // @namespace    local.feather.pod-menu
-// @version      2.3.10
+// @version      2.3.11
 // @description  Adds a pod menu to the CheckSet task list: filter the Runtime Findings V2 and Individual Apps tasks by POD.
 // @match        https://feather.openai.com/*
 // @noframes
@@ -18,7 +18,7 @@
   if (window.__podMenuLoaded) return;
   window.__podMenuLoaded = true;
 
-  const VERSION = '2.3.10';
+  const VERSION = '2.3.11';
   const TAG = '[podmenu v' + VERSION + ']';
 
   /* ======================= Pod data ======================= */
@@ -26,18 +26,18 @@
   // menu ("Import pod list...") without touching this file. Imported data wins only while its
   // "updated" date is the same as or newer than the built-in date.
   /* POD_DATA_START */
-  // Last read 2026-11-02. Sources: /testing-batch/new-runtime-findings-v2/introduction ("Runtime Apps by POD", incl. each POD's "Additional tasks"),
+  // Last read 2026-11-03. Sources: /testing-batch/new-runtime-findings-v2/introduction ("Runtime Apps by POD", incl. each POD's "Additional tasks"),
   //          /individual-apps/introduction ("Applications by POD").
   const BUILTIN_POD_DATA = {
-    "updated": "2026-11-02",
+    "updated": "2026-11-03",
     "groups": [
       { "name": "Runtime Findings V2", "pods": [
-        { "id": "v2-commercial", "name": "Commercial", "apps": ["Google Analytics","Zendesk","Box","FaxUtil","Google Calendar RI","Microsoft Word","Slack Web","Camtasia","Figma","Agoda Website","Aircall Website","Amazon Website","Amplitude","Calendly Website","Clay","Crunchbase","Doordash","Eventbrite","Fullenrich","Gainsight","GetYourGuide","Gong","Hootsuite","Muckrack","Navan","Odoo","Resy","RI Oracle Pms","Salesforce V2 Website","Shopify","Shopify Admin","Vendoo","Viator","Whatsapp Business","1Password Business","Adobe Sign","Confluence","Discord","Efax","Google Drive","Google Slides Website","Gradescope","Guru Website","Hive","Lastpass Website","Microsoft Sharepoint","Microsoft Teams","Monday.com","Ms Forms","Ms Onenote","Ms Powerbi","Ms Project","Ms Visio 21","Msoffice","Msteams","Notion","Obsidian","RI Coop","Sharepoint","Signal Website","Slack","Westlaw Website","Whatsapp Website","Adobe Creative Cloud","Autocad Web","Calibre","clo3d-website","Figma Website","Letterboxd","Maya","Mural Website","Nuke Desktop","Pinterest Website","Shotgrid","Style3D","Unity","notion"] },
-        { "id": "v2-creative", "name": "Creative & Design", "apps": ["Camtasia","Figma","Box","FaxUtil","Google Calendar RI","Microsoft Word","Slack Web","Anaplan","BlackLine","Bloomberg Terminal","ExpertNetwork","Farsight","Moody's","NetSuite","Oracle EPM","Oracle Fusion ERP","Payu","QuickBooks","QuickBooks Angular","Redtail","SAP S/4HANA","SignalDesk","Tradingview","Workiva","Adobe Creative Cloud","Autocad Web","Calibre","clo3d-website","Figma Website","Letterboxd","Maya","Mural Website","Nuke Desktop","Pinterest Website","Shotgrid","Style3D","Unity","1Password Business","Adobe Sign","Confluence","Discord","Efax","Google Drive","Google Slides Website","Gradescope","Guru Website","Hive","Lastpass Website","Microsoft Sharepoint","Microsoft Teams","Monday.com","Ms Forms","Ms Onenote","Ms Powerbi","Ms Project","Ms Visio 21","Msoffice","Msteams","Notion","Obsidian","RI Coop","Sharepoint","Signal Website","Slack","Westlaw Website","Whatsapp Website","Bank Of Harbor","Bloomberg","Chase","Edgar Sec","Factset","Fraudlabs","Ibisworld","Pitchbook Web","Sage Website","Taxjar Website","Tipalti","notion"] },
-        { "id": "v2-engineering", "name": "Engineering & Data", "apps": ["AWS","Bastion","Cloudflare","Cursor","Datadog","Datadog APM","Datadog Logs","Datadog Metrics & Monitors","Looker BI","ServiceNow","VS Code","Aws Website","BigQuery","cursor-website","Datadog Website","Azure DevOps","N8N Website","Nx Witness Website","Sentry","Testrail Website","vs-code-website"] },
-        { "id": "v2-finance", "name": "Finance & Markets", "apps": ["Anaplan","BlackLine","Bloomberg Terminal","ExpertNetwork","Farsight","Moody's","NetSuite","Oracle EPM","Oracle Fusion ERP","Payu","QuickBooks","QuickBooks Angular","Redtail","SAP S/4HANA","SignalDesk","Tradingview","Workiva","Bank Of Harbor","Bloomberg","Chase","Edgar Sec","Factset","Fraudlabs","Ibisworld","Pitchbook Web","Sage Website","Taxjar Website","Tipalti"] },
-        { "id": "v2-healthcare", "name": "Healthcare", "apps": ["3M CodeFinder","Athena","COROS","CoverMyMeds","Epic","HealthEquity","Lifeline","MEDITECH Inpatient","MyChart","Stedi","Box","FaxUtil","Google Calendar RI","Microsoft Word","Slack Web","Pacs Dicom","Photon Health","Powerbi Multi RI Clinical Ops Administration","1Password Business","Adobe Sign","Confluence","Discord","Efax","Google Drive","Google Slides Website","Gradescope","Guru Website","Hive","Lastpass Website","Microsoft Sharepoint","Microsoft Teams","Monday.com","Ms Forms","Ms Onenote","Ms Powerbi","Ms Project","Ms Visio 21","Msoffice","Msteams","Notion","Obsidian","RI Coop","Sharepoint","Signal Website","Slack","Westlaw Website","Whatsapp Website","notion"] },
-        { "id": "v2-productivity", "name": "Productivity", "apps": ["Box","FaxUtil","Google Calendar RI","Microsoft Word","Slack Web","Google Analytics","Zendesk","Camtasia","Figma","Anaplan","BlackLine","Bloomberg Terminal","ExpertNetwork","Farsight","Moody's","NetSuite","Oracle EPM","Oracle Fusion ERP","Payu","QuickBooks","QuickBooks Angular","Redtail","SAP S/4HANA","SignalDesk","Tradingview","Workiva","1Password Business","Adobe Sign","Confluence","Discord","Efax","Google Drive","Google Slides Website","Gradescope","Guru Website","Hive","Lastpass Website","Microsoft Sharepoint","Microsoft Teams","Monday.com","Ms Forms","Ms Onenote","Ms Powerbi","Ms Project","Ms Visio 21","Msoffice","Msteams","Notion","Obsidian","RI Coop","Sharepoint","Signal Website","Slack","Westlaw Website","Whatsapp Website","Agoda Website","Aircall Website","Amazon Website","Amplitude","Calendly Website","Clay","Crunchbase","Doordash","Eventbrite","Fullenrich","Gainsight","GetYourGuide","Gong","Hootsuite","Muckrack","Navan","Odoo","Resy","RI Oracle Pms","Salesforce V2 Website","Shopify","Shopify Admin","Vendoo","Viator","Whatsapp Business","Adobe Creative Cloud","Autocad Web","Calibre","clo3d-website","Figma Website","Letterboxd","Maya","Mural Website","Nuke Desktop","Pinterest Website","Shotgrid","Style3D","Unity","Bank Of Harbor","Bloomberg","Chase","Edgar Sec","Factset","Fraudlabs","Ibisworld","Pitchbook Web","Sage Website","Taxjar Website","Tipalti","notion"] }
+        { "id": "v2-commercial", "name": "Commercial", "apps": ["Clay","LinkedIn","Oracle PMS","Resy","Shopify","WhatsApp Business","ClickUp","Deel","DocuSign","Google Workspace","Microsoft Office","Microsoft SharePoint","Microsoft Teams","Notion","Slack","AutoCAD Web","Unity","Adobe Creative Cloud","notion"] },
+        { "id": "v2-creative", "name": "Creative & Design", "apps": ["AutoCAD Web","Unity","ClickUp","Deel","DocuSign","Google Workspace","Microsoft Office","Microsoft SharePoint","Microsoft Teams","Notion","Slack","Anaplan","Bloomberg Terminal","ExpertNetwork","Farsight","FLG","Moody's","Oracle Fusion ERP","QuickBooks","QuickBooks Angular","Adobe Creative Cloud","PayU","notion"] },
+        { "id": "v2-engineering", "name": "Engineering & Data", "apps": ["AWS","BigQuery","Cloudflare","Datadog","Datadog APM","Datadog Logs","Datadog Metrics & Monitors","Grafana","Tableau","VS Code","Google Workspace"] },
+        { "id": "v2-finance", "name": "Finance & Markets", "apps": ["Anaplan","Bloomberg Terminal","ExpertNetwork","Farsight","FLG","Moody's","Oracle Fusion ERP","QuickBooks","QuickBooks Angular","Google Workspace","PayU"] },
+        { "id": "v2-healthcare", "name": "Healthcare", "apps": ["3M CodeFinder","COROS","CoverMyMeds","Epic","HealthEquity","Lifeline","MEDITECH Inpatient","MyChart","PACS DICOM","Power BI Clinical Operations","Stedi","ClickUp","Deel","DocuSign","Google Workspace","Microsoft Office","Microsoft SharePoint","Microsoft Teams","Notion","Slack","notion"] },
+        { "id": "v2-productivity", "name": "Productivity", "apps": ["ClickUp","Deel","DocuSign","Google Workspace","Microsoft Office","Microsoft SharePoint","Microsoft Teams","Notion","Slack","Clay","LinkedIn","Oracle PMS","Resy","Shopify","WhatsApp Business","AutoCAD Web","Unity","Anaplan","Bloomberg Terminal","ExpertNetwork","Farsight","FLG","Moody's","Oracle Fusion ERP","QuickBooks","QuickBooks Angular","Adobe Creative Cloud","PayU","notion"] }
       ] },
       { "name": "Individual apps", "pods": [
         { "id": "ia-commercial", "name": "Commercial", "apps": ["Ahrefs Site Explorer","Amazon Ads Campaign Manager","AWeber","Constant Contact","ConvertKit","eBay Seller Hub","Getfly CRM","GetResponse","Google Analytics","Google Trends","HoneyBook","Instantly","Kommo CRM","LinkedIn Campaign Manager","Pipedrive","Salesforce"] },
