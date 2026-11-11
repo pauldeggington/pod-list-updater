@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Feather: Pod filter menu
 // @namespace    local.feather.pod-menu
-// @version      2.4.13
+// @version      2.4.14
 // @description  Adds a pod menu to the CheckSet task list: filter the Runtime Findings V2 and Individual Apps tasks by POD.
 // @match        https://feather.openai.com/*
 // @noframes
@@ -20,7 +20,7 @@
   if (window.__podMenuLoaded) return;
   window.__podMenuLoaded = true;
 
-  const VERSION = '2.4.13';
+  const VERSION = '2.4.14';
   const TAG = '[podmenu v' + VERSION + ']';
 
   /* ======================= Pod data ======================= */
@@ -29,7 +29,7 @@
   // "updated" date is the same as or newer than the built-in date.
   /* POD_DATA_START */
   const BUILTIN_POD_DATA = {
-    "updated": "2026-11-10",
+    "updated": "2026-11-11",
     "groups": [
       {
         "name": "Runtime Findings V2",
@@ -62,7 +62,6 @@
               "Movegistics",
               "Muck Rack",
               "Oracle B2C Service",
-              "PG&E",
               "Redfin",
               "RentCafe",
               "RepairPal",
@@ -79,7 +78,6 @@
               "Xfinity",
               "Yardi Breeze",
               "Yelp",
-              "Zendesk",
               "California DMV",
               "Confluence",
               "Deel",
@@ -92,18 +90,17 @@
               "Notion",
               "Redmine",
               "SignUpGenius",
-              "Slack",
               "Calibre",
               "Camtasia",
               "Canva",
               "Frame",
               "Letterboxd",
               "Google Workspace",
-              "Adobe Creative Cloud",
               "AutoCAD Web",
               "CLO 3D",
               "Google Analytics",
               "Houzz",
+              "Slack",
               "Zoom",
               "notion"
             ]
@@ -117,6 +114,46 @@
               "Canva",
               "Frame",
               "Letterboxd",
+              "Agoda",
+              "Aircall",
+              "Angi",
+              "Apartments.com",
+              "AppFolio",
+              "Clay",
+              "Connect",
+              "DAT One",
+              "DoorDash",
+              "Eventbrite",
+              "Facilio",
+              "Fandango",
+              "Fresha",
+              "FullEnrich",
+              "Funnel",
+              "GetYourGuide",
+              "Hertz",
+              "Hilton Honors",
+              "Hootsuite",
+              "Loop Returns",
+              "Marriott Bonvoy",
+              "Movegistics",
+              "Muck Rack",
+              "Oracle B2C Service",
+              "Redfin",
+              "RentCafe",
+              "RepairPal",
+              "Resy",
+              "Safeway",
+              "Thumbtack",
+              "Ticketmaster",
+              "Tock",
+              "Trainline",
+              "Vendoo",
+              "Viator",
+              "WhatsApp Business",
+              "World of Hyatt",
+              "Xfinity",
+              "Yardi Breeze",
+              "Yelp",
               "California DMV",
               "Confluence",
               "Deel",
@@ -129,7 +166,6 @@
               "Notion",
               "Redmine",
               "SignUpGenius",
-              "Slack",
               "Allstate Insurance",
               "American Express",
               "Anaplan",
@@ -159,7 +195,10 @@
               "AutoCAD Web",
               "CLO 3D",
               "Commercial Bank Portal",
+              "Google Analytics",
+              "Houzz",
               "SEC EDGAR",
+              "Slack",
               "Zoom",
               "notion"
             ]
@@ -179,7 +218,6 @@
               "Looker BI",
               "Siemens Desigo CC",
               "Tableau",
-              "WAVE",
               "Agoda",
               "Aircall",
               "Angi",
@@ -204,7 +242,6 @@
               "Movegistics",
               "Muck Rack",
               "Oracle B2C Service",
-              "PG&E",
               "Redfin",
               "RentCafe",
               "RepairPal",
@@ -221,7 +258,28 @@
               "Xfinity",
               "Yardi Breeze",
               "Yelp",
-              "Zendesk",
+              "3M CodeFinder",
+              "Aetna",
+              "Care",
+              "ClassPass",
+              "COROS",
+              "CoverMyMeds",
+              "Epic MyChart",
+              "HealthEquity",
+              "Lifeline",
+              "MEDITECH Inpatient",
+              "Mindbody",
+              "MyChart",
+              "MyFitnessPal",
+              "OpenMRS",
+              "Photon Health",
+              "Stedi",
+              "Strava",
+              "UnitedHealthcare",
+              "UpToDate",
+              "Veeva Vault",
+              "WEX Benefits",
+              "Zocdoc",
               "Google Workspace",
               "Cursor",
               "Google Analytics",
@@ -301,8 +359,8 @@
               "Notion",
               "Redmine",
               "SignUpGenius",
-              "Slack",
               "Google Workspace",
+              "Slack",
               "Zoom",
               "notion"
             ]
@@ -323,7 +381,6 @@
               "Notion",
               "Redmine",
               "SignUpGenius",
-              "Slack",
               "Agoda",
               "Aircall",
               "Angi",
@@ -348,7 +405,6 @@
               "Movegistics",
               "Muck Rack",
               "Oracle B2C Service",
-              "PG&E",
               "Redfin",
               "RentCafe",
               "RepairPal",
@@ -365,7 +421,6 @@
               "Xfinity",
               "Yardi Breeze",
               "Yelp",
-              "Zendesk",
               "Calibre",
               "Camtasia",
               "Canva",
@@ -396,13 +451,13 @@
               "TradingView",
               "Zip Procurement",
               "Google Workspace",
-              "Adobe Creative Cloud",
               "AutoCAD Web",
               "CLO 3D",
               "Commercial Bank Portal",
               "Google Analytics",
               "Houzz",
               "SEC EDGAR",
+              "Slack",
               "Zoom",
               "notion"
             ]
